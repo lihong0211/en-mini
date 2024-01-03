@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/words/words",
+    "pages/dialogue/dialogue",
+    "pages/conversation/conversation",
+    "pages/test/test"
+  ],
+  "subPackages": [],
+  "window": {
+    "pageOrientation": "portrait",
+    "navigationBarTitleText": "Hello en",
+    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#007AFF",
+    "backgroundColor": "#F8F8F8",
+    "backgroundColorTop": "#F4F5F6",
+    "backgroundColorBottom": "#F4F5F6"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#007AFF",
+    "borderStyle": "black",
+    "backgroundColor": "#F8F8F8",
+    "list": [
+      {
+        "pagePath": "pages/words/words",
+        "iconPath": "static/word.png",
+        "selectedIconPath": "static/word-hl.png",
+        "text": "words"
+      },
+      {
+        "pagePath": "pages/dialogue/dialogue",
+        "iconPath": "static/dialogue.png",
+        "selectedIconPath": "static/dialogue-hl.png",
+        "text": "dialogue"
+      },
+      {
+        "pagePath": "pages/conversation/conversation",
+        "iconPath": "static/conversation.png",
+        "selectedIconPath": "static/conversation-hl.png",
+        "text": "conversation"
+      },
+      {
+        "pagePath": "pages/test/test",
+        "iconPath": "static/test.png",
+        "selectedIconPath": "static/test-hl.png",
+        "text": "test"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "演示定位能力"
+    }
+  },
+  "usingComponents": {}
+}
