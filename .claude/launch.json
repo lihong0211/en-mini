@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "doctor-dog-en",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /Users/lihong/Desktop/personal/code/doctor-dog-web && pnpm --filter en dev"],
+      "port": 3389
+    }
+  ]
+}

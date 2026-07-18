@@ -1,103 +1,79 @@
 <template>
-	<view class="uni-container">
-		<view class="content">
-			<uni-card class="item" v-for="(item, idx) in list" :key="item.word">
-				<view class="meaning">
-					{{ item.meaning }}
-				</view>
-				<view class="status">
-					<view class="prefix">
-						<image class="status-init" v-if="!item.test" src="~@/static/write.png" />
-						<image class="status-loading" v-if="item.test && item.test !== item.word" src="~@/static/loading.png" />
-						<image class="status-done" v-if="item.test && item.test === item.word" src="~@/static/done.png" />
+	<view class="nb-page">
+		<view class="nb-scroll quiz-scroll">
+			<view class="quiz-card" v-for="(item, idx) in list" :key="item.word">
+				<view class="quiz-num">{{ idx + 1 }}</view>
+				<view class="quiz-body">
+					<text class="quiz-meaning">{{ item.meaningText }}</text>
+					<view class="answer-row">
+						<input class="answer-input" :value="item.test" @input="e => handleInput(e, idx)"
+							:focus="!idx" placeholder="写下这个单词…">
+						<view class="answer-mark" :class="markClass(item)">
+							<text v-if="item.test && item.test === item.word">✓</text>
+						</view>
 					</view>
-
-					<input v-if="!idx" focus class="input" :value="item.test" @input="e => handleInput(e, idx)"
-						placeholder="请输入...">
-					<input v-else class="input" :value="item.test" @input="e => handleInput(e, idx)" placeholder="请输入...">
-					<image class="help-cancel" src="~@/static/cancel.png" v-if="item.test && item.test === item.word"
-						@click="cancelHelp(idx)" />
-					<text v-else class="help" @click="help(idx)">提示</text>
+					<view class="quiz-actions">
+						<text v-if="item.test && item.test === item.word" class="clear-btn" @click="cancelHelp(idx)">重写</text>
+						<text v-else class="hint-btn" @click="help(idx)">提示</text>
+					</view>
 				</view>
-
-			</uni-card>
-		</view>
-		<view class="pagination">
-			<view>
-				<text class="mastered">已掌握</text>
-				<switch class="switch" color="#FFCC33" style="transform:scale(0.7)" :checked="mastered === 1"
-					@change="changeType" />
 			</view>
-
-			<view class="refresh" @click="getList">换一批</view>
+			<view v-if="!list.length" class="nb-empty">这个词库还没有单词，去别的词库看看吧</view>
+		</view>
+		<view v-if="list.length" class="footer-bar">
+			<text class="footer-label">{{ name }}</text>
+			<view class="refresh-btn" @click="getList">换一批</view>
 		</view>
 	</view>
 </template>
 <script>
-import request from '~@/common/request'
+import request from '~@/common/requestDesktop'
+import { playAudio } from '~@/common/util'
+
 export default {
 	data() {
 		return {
-			list: [],
-			mastered: 2
+			libraryId: null,
+			name: '',
+			list: []
 		};
 	},
-	onLoad() {
+	onLoad(query) {
+		this.libraryId = query.library_id
+		this.name = decodeURIComponent(query.name || '')
 		this.getList()
-	},
-	onShareAppMessage() {
-		return {
-			title: '欢迎体验悄咪记单词',
-			path: '/pages/words'
-		}
-	},
-	onNavigationBarButtonTap(e) {
-		uni.navigateTo({
-			url: '/pages/words'
-		});
 	},
 	methods: {
 		getList() {
 			request({
-				url: 'words/list',
-				data: {
-					page: 1,
-					size: 10000,
-					query: {
-						mastered: this.mastered,
-					},
-				},
+				url: `libraries/${this.libraryId}/words`,
+				method: 'GET',
+				data: { page: 1, page_size: 10000 }
 			}).then((res) => {
+				const data = (res?.list || []).map((item) => ({
+					...item,
+					meaningText: (item.meaning || []).map((m) => m.content).join('; ')
+				}));
+				const count = Math.min(20, data.length);
 				const ret = [];
-				for (let i = 0; i < Math.min(20, res?.data?.length); i++) {
-					let idx = Math.floor(Math.random() * res?.data?.length);
-					ret.push(res?.data[idx]);
-					res?.data?.splice(idx, 1)
+				for (let i = 0; i < count; i++) {
+					let idx = Math.floor(Math.random() * data.length);
+					ret.push(data[idx]);
+					data.splice(idx, 1)
 				}
 				this.list = ret
-			})
-		},
-		changePage({ type, current }) {
-			this.page = type === 'next' ? (Math.min(current, Math.round(this.total / 20))) : (Math.max(current, 1))
-			this.getList()
+			}).catch(() => {})
 		},
 
-		playAudio(word) {
-			const innerAudioContext = uni.createInnerAudioContext();
-			innerAudioContext.autoplay = true;
-			innerAudioContext.src = `http://dict.youdao.com/dictvoice?audio=${word}`;
-			innerAudioContext.onPlay(() => {
-				// console.log('开始播放');
-			});
-			innerAudioContext.onError((res) => {
-				console.log(res.errMsg);
-			});
+		markClass(item) {
+			if (item.test && item.test === item.word) return 'done'
+			if (item.test) return 'writing'
+			return 'blank'
 		},
+
+		playAudio,
 		handleInput(e, idx) {
 			this.list[idx].test = e.target.value
-		},
-		changeType(e) {
-			this.mastered = e.target.value ? 1 : 2
 		},
 		help(idx) {
 			this.list[idx].test = this.list[idx].word
@@ -111,127 +87,126 @@ export default {
 
 <style>
 @import '~@/common/uni-nvue.css';
+@import '~@/common/notebook-theme.css';
 
-.uni-container {
-	position: relative;
-	height: 100vh;
+.quiz-scroll {
+	height: calc(100vh - 70px);
+	padding: 16px 18px 24px;
+}
+
+.quiz-card {
+	display: flex;
+	padding: 14px 0;
+	border-bottom: 1px dashed var(--rule);
+}
+
+.quiz-num {
+	width: 22px;
+	flex-shrink: 0;
+	font-family: "Courier New", monospace;
+	font-size: 13px;
+	color: var(--ink-soft);
+	padding-top: 2px;
+}
+
+.quiz-body {
+	flex: 1;
+}
+
+.quiz-meaning {
+	font-size: 15px;
+	color: var(--ink);
+	line-height: 1.5;
+}
+
+.answer-row {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.answer-input {
+	flex: 1;
+	height: 32px;
+	font-size: 16px;
+	font-family: Georgia, "Times New Roman", serif;
+	color: var(--ink);
+	letter-spacing: 1px;
+	border-bottom: 1px solid var(--ink-soft);
+}
+
+.answer-mark {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	margin-left: 10px;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
 	box-sizing: border-box;
 }
 
-.content {
-	height: calc(100vh - 80px);
-	overflow: scroll;
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-	flex-wrap: wrap;
+.answer-mark.blank {
+	border: 1px dashed var(--rule);
 }
 
-.item {
-	width: 100%;
+.answer-mark.writing {
+	border: 1px solid var(--ink-soft);
+	background: var(--paper);
 }
 
-.meaning {
-	border-bottom: 1px dashed #ddd;
-	padding-bottom: 8px;
-	margin-bottom: 10px;
+.answer-mark.done {
+	border: 1px solid var(--margin);
+	color: var(--margin);
+	font-weight: 700;
 }
 
-.pagination {
+.quiz-actions {
+	margin-top: 6px;
+	text-align: right;
+}
+
+.hint-btn {
+	font-size: 12px;
+	color: var(--ink-soft);
+}
+
+.clear-btn {
+	font-size: 12px;
+	color: var(--margin);
+}
+
+.footer-bar {
 	height: 70px;
-	width: calc(100% - 30px);
-	position: absolute !important;
+	width: 100%;
+	position: absolute;
 	bottom: 0;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	padding: 0 18px;
+	box-sizing: border-box;
+	background: var(--paper-deep);
+	border-top: 1px solid var(--rule);
 }
 
-.mastered {
-	color: #0073ff;
+.footer-label {
+	font-family: Georgia, "Times New Roman", serif;
+	color: var(--ink);
 	font-size: 14px;
 }
 
-.switch {
-	filter: drop-shadow(#0073ff 3px 3px 3px);
-	transform: translateX(10px);
-}
-
-.refresh {
+.refresh-btn {
 	width: 100px;
-	height: 30px;
-	line-height: 30px;
-	background-color: #FFCC33;
-	border-radius: 15px;
-	color: #fff;
-	font-size: 16px;
-	text-align: center
-}
-
-.status {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	border-bottom: 1px dashed #0073ff;
-	padding-bottom: 7px;
-	position: relative;
-}
-
-.prefix {
-	width: 17px;
-	height: 17px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.input {
-	margin-left: 10px;
-	letter-spacing: 1px;
-}
-
-.help {
-	font-size: 12px;
-	color: #0073ff;
-	position: absolute;
-	right: 5px;
-	bottom: 7px;
-}
-
-.help-cancel {
-	width: 17px;
-	height: 17px;
-	position: absolute;
-	right: 5px;
-	bottom: 7px;
-}
-
-.status-init {
-	width: 17px;
-	height: 17px;
-}
-
-.status-loading {
-	width: 13px;
-	height: 13px;
-	transform: translateY(16px);
-	vertical-align: middle;
-	display: inline-block;
-	animation: loading 1.5s ease-in-out 10000;
-}
-
-.status-done {
-	width: 13px;
-	height: 13px;
-}
-
-@keyframes loading {
-	from {
-		transform: rotate(0deg);
-	}
-
-	to {
-		transform: rotate(360deg);
-	}
+	height: 36px;
+	line-height: 36px;
+	background-color: var(--highlight);
+	border-radius: 4px;
+	color: var(--highlight-ink);
+	font-size: 15px;
+	font-weight: 600;
+	text-align: center;
 }
 </style>

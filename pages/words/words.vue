@@ -1,90 +1,60 @@
 <template>
-	<view class="uni-container">
-		<view class="content">
-			<uni-card class="item" v-for="item in list" :key="item.url">
-				<view class="row word">
-					单词：{{ item.word }}
-					<image src="http://fanyi-cdn.cdn.bcebos.com/webStatic/translation/asset/sound-normal.e3538f1c.png"
-						class="pronunciation" @click="playAudio(item.word)"></image>
+	<view class="nb-page">
+		<view class="nb-scroll">
+			<view class="catalog-card" v-for="item in list" :key="item.id" @click="openLibrary(item)">
+				<view class="catalog-tab">{{ item.name.charAt(0) }}</view>
+				<view class="catalog-head">
+					<text class="catalog-name">{{ item.name }}</text>
+					<text class="catalog-count">{{ item.word_count }} 词</text>
 				</view>
-				<view class="row meaning">
-					释义：{{ item.meaning }}
+				<text class="catalog-desc" v-if="item.description">{{ item.description }}</text>
+				<view class="catalog-foot" @click.stop="toggleFavorite(item)">
+					<text class="star" :class="{ active: item.favorited }">{{ item.favorited ? '★' : '☆' }}</text>
+					<text class="favorite-label">{{ item.favorited ? '已收藏' : '收藏' }}</text>
 				</view>
-				<view v-if="item.type" class="row type">
-					类型：{{ item.type.join('、') }}
-				</view>
-				<view class="row" v-if="item.collocation">
-					搭配：{{ item.collocation }}
-				</view>
-				<view class="row" v-if="item.collocation">搭配释义：{{ item.collocation_meaning }}</view>
-				<view class="row mastered">
-					<text>是否掌握</text>
-					<switch class="switch" color="#FFCC33" style="transform:scale(0.7)" :checked="item.mastered === 1" />
-				</view>
-
-
-			</uni-card>
+			</view>
+			<view v-if="!list.length" class="nb-empty">词库柜暂时是空的，稍后再来看看</view>
 		</view>
-
-		<uni-pagination key="words" class="pagination" v-if="list.length" show-icon="true" @change="changePage" :total="total"
-			pageSize="20" :current="page">
-		</uni-pagination>
-
 	</view>
 </template>
 <script>
-import request from '~@/common/request'
+import request from '~@/common/requestDesktop'
+
 export default {
 	data() {
 		return {
-			total: 0,
-			page: 1,
 			list: []
 		};
 	},
 	onLoad() {
 		this.getList()
-		// this.translate()
 	},
 	onShareAppMessage() {
 		return {
-			title: '欢迎体验悄咪记单词',
+			title: '欢迎体验悄咪学英语',
 			path: '/pages/words'
 		}
-	},
-	onNavigationBarButtonTap(e) {
-		uni.navigateTo({
-			url: '/pages/words'
-		});
 	},
 	methods: {
 		getList() {
 			request({
-				url: 'words/list',
-				data: {
-					page: this.page,
-					size: 20
-				},
-			}).then((res) => {
-				this.list = res.data
-				this.total = res.total
-				this.page = res.page
-			})
+				url: 'libraries/public',
+				method: 'GET'
+			}).then((data) => {
+				this.list = data
+			}).catch(() => {})
 		},
-		changePage({ type, current }) {
-			this.page = type === 'next' ? (Math.min(current, Math.round(this.total / 20))) : (Math.max(current, 1))
-			this.getList()
+		toggleFavorite(item) {
+			request({
+				url: item.favorited ? 'libraries/unfavorite' : 'libraries/favorite',
+				data: { library_id: item.id }
+			}).then(() => {
+				item.favorited = !item.favorited
+			}).catch(() => {})
 		},
-
-		playAudio(word) {
-			const innerAudioContext = uni.createInnerAudioContext();
-			innerAudioContext.autoplay = true;
-			innerAudioContext.src = `http://dict.youdao.com/dictvoice?audio=${word}`;
-			innerAudioContext.onPlay(() => {
-				// console.log('开始播放');
-			});
-			innerAudioContext.onError((res) => {
-				console.log(res.errMsg);
+		openLibrary(item) {
+			uni.navigateTo({
+				url: `/pages/library-detail/library-detail?id=${item.id}&name=${encodeURIComponent(item.name)}`
 			});
 		}
 	}
@@ -93,73 +63,81 @@ export default {
 
 <style>
 @import '~@/common/uni-nvue.css';
+@import '~@/common/notebook-theme.css';
 
-.uni-container {
-	padding-bottom: 40px;
+.catalog-card {
 	position: relative;
-	height: 100vh;
-	box-sizing: border-box;
+	background-color: var(--paper);
+	background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--rule) 28px);
+	border-radius: 6px;
+	border-left: 3px solid var(--margin);
+	box-shadow: 0 2px 8px rgba(30, 42, 68, 0.10);
+	margin: 22px 16px 0;
+	padding: 18px 16px 14px;
 }
 
-.content {
-	height: calc(100vh - 70px);
-	overflow: scroll;
+.catalog-tab {
+	position: absolute;
+	top: -11px;
+	left: 22px;
+	width: 26px;
+	height: 20px;
+	background: var(--ink);
+	color: var(--paper);
+	font-size: 13px;
+	font-weight: 600;
+	text-align: center;
+	line-height: 20px;
+	border-radius: 3px 3px 0 0;
+}
+
+.catalog-head {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
-	flex-wrap: wrap;
 }
 
-.item {
-	width: 100%;
+.catalog-name {
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--ink);
 }
 
-.pagination {
-	width: 180px;
-	height: 40px;
-	position: absolute !important;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-90px);
+.catalog-count {
+	color: var(--ink-soft);
+	font-size: 12px;
+	font-family: "Courier New", monospace;
 }
 
-.row {
-	border-bottom: 1px dashed #eee;
-	padding-bottom: 3px;
-	margin-bottom: 5px;
+.catalog-desc {
+	display: block;
+	color: var(--ink-soft);
+	font-size: 13px;
+	margin-top: 6px;
+	line-height: 1.5;
 }
 
-.word {
+.catalog-foot {
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
+	margin-top: 14px;
+	padding-top: 10px;
+	border-top: 1px dashed var(--rule);
 }
 
-.pronunciation {
-	width: 25px;
-	height: 25px;
-	margin-left: 10px;
-	border-radius: 50%;
-	filter: drop-shadow(blue 3px 3px 3px);
-	background-image: url('http://fanyi-cdn.cdn.bcebos.com/webStatic/translation/asset/sound-normal.e3538f1c.png');
+.star {
+	font-size: 16px;
+	color: var(--ink-soft);
+	margin-right: 4px;
 }
 
-.mastered {
-	width: 100%;
-	align-items: center;
-	justify-content: space-between;
-	display: flex;
-	/* color: #59bff1; */
-	color: transparent;
-	background-image: linear-gradient(45deg, #0073ff, purple, cyan, deeppink);
-	-webkit-background-clip: text;
-	background-clip: text;
-
-	/* filter: drop-shadow(#0ff 3px 3px 3px); */
+.star.active {
+	color: var(--highlight-ink);
 }
 
-.switch {
-	filter: drop-shadow(blue 3px 3px 3px);
-	transform: translateX(10px);
+.favorite-label {
+	font-size: 13px;
+	color: var(--ink-soft);
 }
 </style>

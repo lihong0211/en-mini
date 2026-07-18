@@ -80,6 +80,12 @@
 					}
 				}
 			}
+		},
+		{
+			"path": "pages/library-detail/library-detail",
+			"style": {
+				"navigationBarTitleText": "\u8bcd\u5e93"
+			}
 		}
 ],
 	"subPackages": [
@@ -124,11 +130,6 @@
 				"iconPath": "static/conversation.png",
 				"selectedIconPath": "static/conversation-hl.png",
 				"text": "conversation"
-			}, {
-				"pagePath": "pages/test/test",
-				"iconPath": "static/test.png",
-				"selectedIconPath": "static/test-hl.png",
-				"text": "test"
 			}
 		]
 	}

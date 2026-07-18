@@ -1,25 +1,24 @@
 {
-	"id": "hello-uniapp",
-	"name": "hello-uniapp",
-	"displayName": "hello-uniapp 示例工程",
-	"version": "3.4.4",
-	"description": "uni-app 框架示例，一套代码，同时发行到iOS、Android、H5、小程序等多个平台，请使用手机扫码快速体验 uni-app 的强大功能",
+	"id": "en-mini",
+	"name": "en-mini",
+	"displayName": "悄咪学英语",
+	"version": "1.0.0",
+	"description": "基于 uni-app 的微信小程序，背单词、学对话、做测试",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
-	"repository": "https://github.com/dcloudio/hello-uniapp.git",
+	"repository": "git@github.com:lihong0211/en-mini.git",
 	"keywords": [
-        "hello-uniapp",
         "uni-app",
-        "uni-ui",
-        "示例工程"
+        "微信小程序",
+        "背单词"
     ],
 	"author": "",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/dcloudio/hello-uniapp/issues"
+		"url": "https://github.com/lihong0211/en-mini/issues"
 	},
-	"homepage": "https://github.com/dcloudio/hello-uniapp#readme",
+	"homepage": "https://github.com/lihong0211/en-mini#readme",
 	"dependencies": {},
 	"dcloudext": {
 		"category": [

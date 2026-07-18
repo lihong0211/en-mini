@@ -15,6 +15,15 @@ function formatTime(time) {
 	}).join(':')
 }
 
+function playAudio(word) {
+	const innerAudioContext = uni.createInnerAudioContext();
+	innerAudioContext.autoplay = true;
+	innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}`;
+	innerAudioContext.onError((res) => {
+		console.log(res.errMsg);
+	});
+}
+
 function formatLocation(longitude, latitude) {
 	if (typeof longitude === 'string' && typeof latitude === 'string') {
 		longitude = parseFloat(longitude)
@@ -69,5 +78,6 @@ var dateUtils = {
 export {
 	formatTime,
 	formatLocation,
-	dateUtils
+	dateUtils,
+	playAudio
 }

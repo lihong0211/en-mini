@@ -1,0 +1,32 @@
+page {
+	--paper: #F7F2E7;
+	--paper-deep: #EDE4D0;
+	--rule: #CBD6E6;
+	--ink: #1E2A44;
+	--ink-soft: #6B7690;
+	--margin: #C1443A;
+	--highlight: #F5B940;
+	--highlight-ink: #7A4E00;
+}
+
+.nb-page {
+	background-color: var(--paper-deep);
+	position: relative;
+	height: 100vh;
+	box-sizing: border-box;
+}
+
+.nb-scroll {
+	height: 100vh;
+	overflow: scroll;
+	box-sizing: border-box;
+	padding: 20px 0 24px;
+}
+
+.nb-empty {
+	text-align: center;
+	color: var(--ink-soft);
+	font-size: 14px;
+	padding: 80px 40px 0;
+	line-height: 1.6;
+}
