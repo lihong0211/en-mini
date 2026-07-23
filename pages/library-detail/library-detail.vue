@@ -59,7 +59,7 @@
 </template>
 <script>
 import request from '~@/common/requestDesktop'
-import { playAudio, playAudioUrl, stripPhoneticBrackets, getNavBarInfo } from '~@/common/util'
+import { playAudio, playAudioUrl, stripPhoneticBrackets, getNavBarInfo, WORD_VOLUME } from '~@/common/util'
 import backButton from '~@/common/back-button.vue'
 import bgImage from '~@/common/bg-image.vue'
 import likeSrc from '~@/static/like.png'
@@ -218,6 +218,7 @@ export default {
 		},
 		playWordThenSentencesThenAdvance(word) {
 			const ctx = uni.createInnerAudioContext()
+			ctx.volume = WORD_VOLUME
 			ctx.src = `https://dict.youdao.com/dictvoice?audio=${word}`
 			const proceed = () => {
 				this.stopWordAudio()
@@ -249,6 +250,7 @@ export default {
 		},
 		playSingleWordCycle(word) {
 			const ctx = uni.createInnerAudioContext()
+			ctx.volume = WORD_VOLUME
 			ctx.src = `https://dict.youdao.com/dictvoice?audio=${word}`
 			const afterWord = () => {
 				this.stopWordAudio()

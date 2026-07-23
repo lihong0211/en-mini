@@ -29,10 +29,14 @@ function shouldSkipPlay(src) {
 	return false
 }
 
+// 单词发音源响度比例句音频高一截，统一调低一点，听感上跟例句差不多大声
+const WORD_VOLUME = 0.7
+
 function playAudio(word) {
 	if (shouldSkipPlay(word)) return
 	const innerAudioContext = uni.createInnerAudioContext();
 	innerAudioContext.autoplay = true;
+	innerAudioContext.volume = WORD_VOLUME;
 	innerAudioContext.src = `https://dict.youdao.com/dictvoice?audio=${word}`;
 	innerAudioContext.onError((res) => {
 		console.log(res.errMsg);
@@ -127,5 +131,6 @@ export {
 	playAudio,
 	playAudioUrl,
 	stripPhoneticBrackets,
-	getNavBarInfo
+	getNavBarInfo,
+	WORD_VOLUME
 }
