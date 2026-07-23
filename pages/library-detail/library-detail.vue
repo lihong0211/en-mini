@@ -161,9 +161,10 @@ export default {
 			}
 		},
 		cycleMode() {
-			// 顺序播放切走前，记住当前播到哪个词；下次切回顺序播放时从这个位置续播，
-			// 不再跳回第一个词。随机/单词循环模式本身没有"续播位置"的概念，不用记。
-			if (this.playMode === 'order') {
+			// 顺序播放、单词循环用的是同一个（未打乱的）列表，两者共享同一个"播到哪了"
+			// 的位置：离开其中一个时记下来，进入另一个（或切回顺序播放）时接着播，不用
+			// 从头开始。只有随机播放每次都是全新打乱，没有"续播位置"这一说。
+			if (this.playMode !== 'shuffle') {
 				this.orderIndex = this.current
 			}
 
@@ -175,9 +176,7 @@ export default {
 				this.current = 0
 			} else {
 				this.list = this.orderedList.slice()
-				this.current = this.playMode === 'order'
-					? Math.min(this.orderIndex, Math.max(this.list.length - 1, 0))
-					: 0
+				this.current = Math.min(this.orderIndex, Math.max(this.list.length - 1, 0))
 			}
 
 			if (this.list.length) {
