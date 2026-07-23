@@ -37,7 +37,7 @@
 			</view>
 
 			<view class="account-row" v-if="user">
-				<text v-if="user.username" class="account-bound">已绑定账号：{{ user.username }}</text>
+				<text v-if="user.username" class="account-bound">已绑定桌面端账号：{{ user.username }}</text>
 				<template v-else>
 					<text class="account-link" @click="openCredentialForm('set')">设置账号密码</text>
 					<text class="account-link" @click="openCredentialForm('bind')">绑定已有桌面账号</text>
