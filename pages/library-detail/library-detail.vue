@@ -101,6 +101,7 @@ export default {
 			current: 0,
 			safeTop: 0,
 			playMode: 'order',
+			orderIndex: 0,
 			defaultLibraryId: null,
 			sentenceAudioCtx: null,
 			wordAudioCtx: null,
@@ -160,12 +161,27 @@ export default {
 			}
 		},
 		cycleMode() {
+			// 顺序播放切走前，记住当前播到哪个词；下次切回顺序播放时从这个位置续播，
+			// 不再跳回第一个词。随机/单词循环模式本身没有"续播位置"的概念，不用记。
+			if (this.playMode === 'order') {
+				this.orderIndex = this.current
+			}
+
 			const idx = PLAY_MODES.indexOf(this.playMode)
 			this.playMode = PLAY_MODES[(idx + 1) % PLAY_MODES.length]
-			this.current = 0
-			this.list = this.playMode === 'shuffle' ? this.shuffleArray(this.orderedList) : this.orderedList.slice()
+
+			if (this.playMode === 'shuffle') {
+				this.list = this.shuffleArray(this.orderedList)
+				this.current = 0
+			} else {
+				this.list = this.orderedList.slice()
+				this.current = this.playMode === 'order'
+					? Math.min(this.orderIndex, Math.max(this.list.length - 1, 0))
+					: 0
+			}
+
 			if (this.list.length) {
-				this.playForWord(this.list[0].word)
+				this.playForWord(this.list[this.current].word)
 			}
 		},
 		toggleAutoAdvance() {
