@@ -1,23 +1,24 @@
 page {
-	--paper: #F7F2E7;
-	--paper-deep: #EDE4D0;
-	--rule: #CBD6E6;
-	--ink: #1E2A44;
-	--ink-soft: #6B7690;
-	--margin: #C1443A;
-	--highlight: #F5B940;
-	--highlight-ink: #7A4E00;
+	--paper: #1b2036;
+	--paper-deep: #12162a;
+	--rule: #3a4570;
+	--ink: #f3f0fb;
+	--ink-soft: #9aa3c9;
+	--margin: #e879f9;
+	--highlight: #f5b940;
+	--highlight-ink: #facc15;
 }
 
 .nb-page {
-	background-color: var(--paper-deep);
+	background-color: transparent;
 	position: relative;
 	height: 100vh;
+	padding-top: var(--safe-top, 0px);
 	box-sizing: border-box;
 }
 
 .nb-scroll {
-	height: 100vh;
+	height: calc(100vh - var(--safe-top, 0px));
 	overflow: scroll;
 	box-sizing: border-box;
 	padding: 20px 0 24px;

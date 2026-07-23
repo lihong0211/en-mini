@@ -1,20 +1,13 @@
 .uni-container {
 	padding-bottom: 40px;
+	padding-top: var(--safe-top, 0px);
 	position: relative;
 	height: 100vh;
 	box-sizing: border-box;
+	background-color: transparent;
 }
 
 .content {
-	height: calc(100vh - 70px);
+	height: calc(100vh - 70px - var(--safe-top, 0px));
 	overflow: scroll;
-}
-
-.pagination {
-	width: 180px;
-	height: 40px;
-	position: absolute !important;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-90px);
 }

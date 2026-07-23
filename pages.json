@@ -21,24 +21,7 @@
 					"bounce": "vertical",
 					"titleNView": {
 						"buttons": [{
-							"text": "\ue534",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "22px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/dialogue/dialogue",
-			"style": {
-				"navigationBarTitleText": "dialogue",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"text": "\ue534",
+							"text": "",
 							"fontSrc": "/static/uni.ttf",
 							"fontSize": "22px",
 							"color": "#FFFFFF"
@@ -55,7 +38,7 @@
 					"bounce": "vertical",
 					"titleNView": {
 						"buttons": [{
-							"text": "\ue534",
+							"text": "",
 							"fontSrc": "/static/uni.ttf",
 							"fontSize": "22px",
 							"color": "#FFFFFF"
@@ -65,40 +48,36 @@
 			}
 		},
 		{
-			"path": "pages/test/test",
+			"path": "pages/my/my",
 			"style": {
-				"navigationBarTitleText": "test",
-				"app-plus": {
-					"bounce": "vertical",
-					"titleNView": {
-						"buttons": [{
-							"text": "\ue534",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "22px",
-							"color": "#FFFFFF"
-						}]
-					}
-				}
+				"navigationBarTitleText": "profile"
 			}
 		},
 		{
 			"path": "pages/library-detail/library-detail",
 			"style": {
-				"navigationBarTitleText": "\u8bcd\u5e93"
+				"navigationBarTitleText": "词库"
+			}
+		},
+		{
+			"path": "pages/library-detail/library-detail-stack-test",
+			"style": {
+				"navigationBarTitleText": "卡片堆叠试验"
 			}
 		}
 ],
 	"subPackages": [
-		
+
 	],
 	"globalStyle": {
 		"pageOrientation": "portrait",
 		"navigationBarTitleText": "Hello en",
 		"navigationBarTextStyle": "white",
 		"navigationBarBackgroundColor": "#007AFF",
-		"backgroundColor": "#F8F8F8",
-		"backgroundColorTop": "#F4F5F6",
-		"backgroundColorBottom": "#F4F5F6",
+		"backgroundColor": "#14172a",
+		"backgroundColorTop": "#14172a",
+		"backgroundColorBottom": "#14172a",
+		"navigationStyle": "custom",
 		"mp-360": {
 			"navigationStyle": "custom"
 		},
@@ -110,10 +89,10 @@
 
 	},
 	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
-		"borderStyle": "black",
-		"backgroundColor": "#F8F8F8",
+		"color": "#8b93b0",
+		"selectedColor": "#e879f9",
+		"borderStyle": "white",
+		"backgroundColor": "#14172a",
 		"list": [{
 				"pagePath": "pages/words/words",
 				"iconPath": "static/word.png",
@@ -121,15 +100,16 @@
 				"text": "words"
 			},
 			{
-				"pagePath": "pages/dialogue/dialogue",
-				"iconPath": "static/dialogue.png",
-				"selectedIconPath": "static/dialogue-hl.png",
-				"text": "dialogue"
-			}, {
 				"pagePath": "pages/conversation/conversation",
 				"iconPath": "static/conversation.png",
 				"selectedIconPath": "static/conversation-hl.png",
 				"text": "conversation"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"iconPath": "static/my.png",
+				"selectedIconPath": "static/my-hl.png",
+				"text": "profile"
 			}
 		]
 	}

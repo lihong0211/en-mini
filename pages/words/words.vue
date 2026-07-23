@@ -1,32 +1,39 @@
 <template>
-	<view class="nb-page">
+	<view class="nb-page" :style="{ '--safe-top': safeTop + 'px' }">
+		<bg-image />
 		<view class="nb-scroll">
 			<view class="catalog-card" v-for="item in list" :key="item.id" @click="openLibrary(item)">
-				<view class="catalog-tab">{{ item.name.charAt(0) }}</view>
+				<view class="favorite-btn" @click.stop="toggleFavorite(item)">
+					<image class="favorite-icon" :src="item.favorited ? likeOnSrc : likeSrc" mode="aspectFit" />
+				</view>
 				<view class="catalog-head">
 					<text class="catalog-name">{{ item.name }}</text>
 					<text class="catalog-count">{{ item.word_count }} 词</text>
 				</view>
 				<text class="catalog-desc" v-if="item.description">{{ item.description }}</text>
-				<view class="catalog-foot" @click.stop="toggleFavorite(item)">
-					<text class="star" :class="{ active: item.favorited }">{{ item.favorited ? '★' : '☆' }}</text>
-					<text class="favorite-label">{{ item.favorited ? '已收藏' : '收藏' }}</text>
-				</view>
 			</view>
-			<view v-if="!list.length" class="nb-empty">词库柜暂时是空的，稍后再来看看</view>
 		</view>
 	</view>
 </template>
 <script>
 import request from '~@/common/requestDesktop'
+import { getNavBarInfo } from '~@/common/util'
+import bgImage from '~@/common/bg-image.vue'
+import likeSrc from '~@/static/like.png'
+import likeOnSrc from '~@/static/like-on.png'
 
 export default {
+	components: { bgImage },
 	data() {
 		return {
-			list: []
+			list: [],
+			safeTop: 0,
+			likeSrc,
+			likeOnSrc
 		};
 	},
 	onLoad() {
+		this.safeTop = getNavBarInfo().top
 		this.getList()
 	},
 	onShareAppMessage() {
@@ -68,33 +75,34 @@ export default {
 .catalog-card {
 	position: relative;
 	background-color: var(--paper);
-	background-image: repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--rule) 28px);
 	border-radius: 6px;
-	border-left: 3px solid var(--margin);
-	box-shadow: 0 2px 8px rgba(30, 42, 68, 0.10);
+	border: 1px solid rgba(232, 121, 249, 0.25);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 	margin: 22px 16px 0;
 	padding: 18px 16px 14px;
-}
-
-.catalog-tab {
-	position: absolute;
-	top: -11px;
-	left: 22px;
-	width: 26px;
-	height: 20px;
-	background: var(--ink);
-	color: var(--paper);
-	font-size: 13px;
-	font-weight: 600;
-	text-align: center;
-	line-height: 20px;
-	border-radius: 3px 3px 0 0;
 }
 
 .catalog-head {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
+	padding-right: 30px;
+}
+
+.favorite-btn {
+	position: absolute;
+	top: 14px;
+	right: 14px;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.favorite-icon {
+	width: 20px;
+	height: 20px;
 }
 
 .catalog-name {
@@ -118,26 +126,4 @@ export default {
 	line-height: 1.5;
 }
 
-.catalog-foot {
-	display: flex;
-	align-items: center;
-	margin-top: 14px;
-	padding-top: 10px;
-	border-top: 1px dashed var(--rule);
-}
-
-.star {
-	font-size: 16px;
-	color: var(--ink-soft);
-	margin-right: 4px;
-}
-
-.star.active {
-	color: var(--highlight-ink);
-}
-
-.favorite-label {
-	font-size: 13px;
-	color: var(--ink-soft);
-}
 </style>

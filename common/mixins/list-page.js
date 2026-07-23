@@ -1,9 +1,15 @@
+import { getNavBarInfo } from '~@/common/util'
+
 export default {
 	data() {
 		return {
 			total: 0,
-			page: 1
+			page: 1,
+			safeTop: 0
 		};
+	},
+	onLoad() {
+		this.safeTop = getNavBarInfo().top
 	},
 	onShareAppMessage() {
 		return {
@@ -17,8 +23,8 @@ export default {
 		});
 	},
 	methods: {
-		changePage({ type, current }) {
-			this.page = type === 'next' ? (Math.min(current, Math.round(this.total / 20))) : (Math.max(current, 1))
+		goToPage(page) {
+			this.page = page
 			this.getList()
 		}
 	}
