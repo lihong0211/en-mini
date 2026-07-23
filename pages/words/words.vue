@@ -3,12 +3,14 @@
 		<bg-image />
 		<view class="nb-scroll">
 			<view class="catalog-card" v-for="item in list" :key="item.id" @click="openLibrary(item)">
-				<view class="favorite-btn" @click.stop="toggleFavorite(item)">
-					<image class="favorite-icon" :src="item.favorited ? likeOnSrc : likeSrc" mode="aspectFit" />
-				</view>
 				<view class="catalog-head">
 					<text class="catalog-name">{{ item.name }}</text>
-					<text class="catalog-count">{{ item.word_count }} 词</text>
+					<view class="catalog-meta">
+						<text class="catalog-count">{{ item.word_count }} 词</text>
+						<view class="favorite-btn" @click.stop="toggleFavorite(item)">
+							<image class="favorite-icon" :src="item.favorited ? likeOnSrc : likeSrc" mode="aspectFit" />
+						</view>
+					</view>
 				</view>
 				<text class="catalog-desc" v-if="item.description">{{ item.description }}</text>
 			</view>
@@ -84,25 +86,27 @@ export default {
 
 .catalog-head {
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
-	padding-right: 30px;
+}
+
+.catalog-meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .favorite-btn {
-	position: absolute;
-	top: 14px;
-	right: 14px;
-	width: 28px;
-	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding: 4px;
+	margin: -4px;
 }
 
 .favorite-icon {
-	width: 20px;
-	height: 20px;
+	width: 18px;
+	height: 18px;
 }
 
 .catalog-name {
