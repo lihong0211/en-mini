@@ -469,24 +469,24 @@ export default {
 
 .word-actions {
 	position: absolute;
-	top: 14px;
-	right: 14px;
+	top: 8px;
+	right: 8px;
 	display: flex;
 	align-items: center;
-	gap: 4px;
+	gap: 2px;
 }
 
 .word-star-btn,
 .word-favorite-btn {
-	width: 28px;
-	height: 28px;
+	width: 26px;
+	height: 26px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .word-star-icon {
-	font-size: 22px;
+	font-size: 18px;
 	line-height: 1;
 	color: var(--ink-soft);
 }
