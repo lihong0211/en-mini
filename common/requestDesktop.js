@@ -17,8 +17,15 @@ function rawRequest(url, method, data) {
 	return uni.request({ url: baseUrl + url, method, data, header }).then((res) => res.data);
 }
 
+// 同一时刻可能有多个 request() 并发触发登录（比如 onShow 里几个接口一起发）。
+// 后端 token 是单设备在线、每次登录都会覆盖上一个：如果不去重，并发的每个 login()
+// 各自换一个新 token，互相覆盖，输的那个请求会拿着已经失效的 token 再次 401。
+// 用同一个 in-flight Promise 让并发调用共享同一次登录，从根上消除这个竞态。
+let loginPromise = null;
+
 function login() {
-	return new Promise((resolve, reject) => {
+	if (loginPromise) return loginPromise;
+	loginPromise = new Promise((resolve, reject) => {
 		uni.login({
 			success: (loginRes) => {
 				rawRequest("auth/wechat/mini-login", "POST", { code: loginRes.code })
@@ -31,7 +38,10 @@ function login() {
 			},
 			fail: reject,
 		});
+	}).finally(() => {
+		loginPromise = null;
 	});
+	return loginPromise;
 }
 
 export default async function request({ url, method = "POST", data }) {
