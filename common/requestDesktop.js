@@ -3,6 +3,14 @@ import { apiHost } from "./env";
 const baseUrl = apiHost + "/en-desktop/";
 const TOKEN_KEY = "en_desktop_token";
 
+export function getToken() {
+	return uni.getStorageSync(TOKEN_KEY);
+}
+
+export function setToken(token) {
+	uni.setStorageSync(TOKEN_KEY, token);
+}
+
 function rawRequest(url, method, data) {
 	const token = uni.getStorageSync(TOKEN_KEY);
 	const header = token ? { Authorization: `Bearer ${token}` } : {};
