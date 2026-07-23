@@ -73,6 +73,7 @@ import autoAdvanceSrc from '~@/static/自动播放.png'
 import autoAdvanceOnSrc from '~@/static/自动播放-on.png'
 
 const PLAY_MODES = ['order', 'shuffle', 'single']
+const SINGLE_REPEAT_DELAY = 1500
 const MODE_ICONS = {
 	order: modeOrderSrc,
 	shuffle: modeShuffleSrc,
@@ -101,7 +102,6 @@ export default {
 			safeTop: 0,
 			playMode: 'order',
 			defaultLibraryId: null,
-			loopAudioCtx: null,
 			sentenceAudioCtx: null,
 			wordAudioCtx: null,
 			advanceTimer: null,
@@ -129,7 +129,6 @@ export default {
 		this.getDefaultLibraryId()
 	},
 	onUnload() {
-		this.stopLoop()
 		this.stopSentenceAudio()
 		this.stopWordAudio()
 		this.clearAdvanceTimer()
@@ -186,11 +185,10 @@ export default {
 		playForWord(word) {
 			this.stopWordAudio()
 			this.stopSentenceAudio()
-			this.stopLoop()
 			this.clearAdvanceTimer()
 
 			if (this.playMode === 'single') {
-				this.startLoop(word)
+				this.playSingleWordCycle(word)
 				return
 			}
 
@@ -234,6 +232,30 @@ export default {
 			ctx.play()
 			this.sentenceAudioCtx = ctx
 		},
+		playSingleWordCycle(word) {
+			const ctx = uni.createInnerAudioContext()
+			ctx.src = `https://dict.youdao.com/dictvoice?audio=${word}`
+			const afterWord = () => {
+				this.stopWordAudio()
+				if (this.sentenceAutoPlay && this.currentSentenceAudioUrls.length) {
+					this.playSentenceQueue(0, () => this.scheduleSingleRepeat(word))
+				} else {
+					this.scheduleSingleRepeat(word)
+				}
+			}
+			ctx.onEnded(afterWord)
+			ctx.onError(afterWord)
+			ctx.play()
+			this.wordAudioCtx = ctx
+		},
+		scheduleSingleRepeat(word) {
+			this.clearAdvanceTimer()
+			this.advanceTimer = setTimeout(() => {
+				if (this.playMode === 'single') {
+					this.playSingleWordCycle(word)
+				}
+			}, SINGLE_REPEAT_DELAY)
+		},
 		advanceIfEnabled() {
 			if (!this.autoAdvance) return
 			const next = this.current + 1
@@ -264,21 +286,6 @@ export default {
 				this.wordAudioCtx.stop()
 				this.wordAudioCtx.destroy()
 				this.wordAudioCtx = null
-			}
-		},
-		startLoop(word) {
-			this.stopLoop()
-			const ctx = uni.createInnerAudioContext()
-			ctx.loop = true
-			ctx.autoplay = true
-			ctx.src = `https://dict.youdao.com/dictvoice?audio=${word}`
-			this.loopAudioCtx = ctx
-		},
-		stopLoop() {
-			if (this.loopAudioCtx) {
-				this.loopAudioCtx.stop()
-				this.loopAudioCtx.destroy()
-				this.loopAudioCtx = null
 			}
 		},
 		shuffleArray(arr) {
