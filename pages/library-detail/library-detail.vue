@@ -6,9 +6,14 @@
 			<swiper-item v-for="item in list" :key="item.id">
 				<view class="card-wrap">
 					<view class="card">
-						<view class="word-favorite-btn" @click.stop="favoriteWord(item)">
-							<image class="word-favorite-icon" :src="item.favorited ? likeOnSrc : likeSrc"
-								mode="aspectFit" />
+						<view class="word-actions">
+							<view class="word-star-btn" :class="{ on: item.favorited }" @click.stop="favoriteWord(item)">
+								<text class="word-star-icon">{{ item.favorited ? '★' : '☆' }}</text>
+							</view>
+							<view class="word-favorite-btn" @click.stop="toggleReview(item)">
+								<image class="word-favorite-icon" :src="reviewWordIds.has(item.id) ? likeOnSrc : likeSrc"
+									mode="aspectFit" />
+							</view>
 						</view>
 						<text class="card-word">{{ item.word }}</text>
 						<view class="entry-phon">
@@ -103,6 +108,8 @@ export default {
 			playMode: 'order',
 			orderIndex: 0,
 			defaultLibraryId: null,
+			reviewLibraryId: null,
+			reviewWordIds: new Set(),
 			sentenceAudioCtx: null,
 			wordAudioCtx: null,
 			advanceTimer: null,
@@ -127,7 +134,7 @@ export default {
 		uni.setNavigationBarTitle({ title: this.name })
 		this.safeTop = getNavBarInfo().top
 		this.getList()
-		this.getDefaultLibraryId()
+		this.getSystemLibraryIds()
 	},
 	onUnload() {
 		this.stopSentenceAudio()
@@ -315,7 +322,7 @@ export default {
 			}
 			return a
 		},
-		getDefaultLibraryId() {
+		getSystemLibraryIds() {
 			request({
 				url: 'libraries/list',
 				method: 'GET'
@@ -324,6 +331,20 @@ export default {
 				if (defaultLib) {
 					this.defaultLibraryId = defaultLib.id
 				}
+				const reviewLib = libs.find((lib) => lib.name === '生词本')
+				if (reviewLib) {
+					this.reviewLibraryId = reviewLib.id
+					this.getReviewWordIds()
+				}
+			}).catch(() => { })
+		},
+		getReviewWordIds() {
+			request({
+				url: `libraries/${this.reviewLibraryId}/words`,
+				method: 'GET',
+				data: { page: 1, page_size: 10000 }
+			}).then((data) => {
+				this.reviewWordIds = new Set(data.list.map((w) => w.id))
 			}).catch(() => { })
 		},
 		favoriteWord(item) {
@@ -339,6 +360,18 @@ export default {
 					item.favorited = true
 				}
 			})
+		},
+		toggleReview(item) {
+			if (!this.reviewLibraryId) return
+			const wasIn = this.reviewWordIds.has(item.id)
+			request({
+				url: wasIn ? 'libraries/remove-word' : 'libraries/add-word',
+				data: { library_id: this.reviewLibraryId, word_id: item.id }
+			}).then(() => {
+				const next = new Set(this.reviewWordIds)
+				wasIn ? next.delete(item.id) : next.add(item.id)
+				this.reviewWordIds = next
+			}).catch(() => { })
 		},
 		playAudio,
 		playAudioUrl,
@@ -434,15 +467,32 @@ export default {
 	align-items: center;
 }
 
-.word-favorite-btn {
+.word-actions {
 	position: absolute;
 	top: 14px;
 	right: 14px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.word-star-btn,
+.word-favorite-btn {
 	width: 28px;
 	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.word-star-icon {
+	font-size: 22px;
+	line-height: 1;
+	color: var(--ink-soft);
+}
+
+.word-star-btn.on .word-star-icon {
+	color: var(--highlight-ink);
 }
 
 .word-favorite-icon {
