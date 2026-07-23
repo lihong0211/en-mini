@@ -84,6 +84,9 @@ import { apiHost } from '~@/common/env'
 import { getNavBarInfo } from '~@/common/util'
 import bgImage from '~@/common/bg-image.vue'
 
+// 系统默认词库固定置顶，跟桌面端 Main.vue 的 PROTECTED_LIBS 排序一致
+const PROTECTED_LIBS = ['默认收藏', '生词本']
+
 export default {
 	components: { bgImage },
 	data() {
@@ -118,7 +121,11 @@ export default {
 				url: 'libraries/list',
 				method: 'GET'
 			}).then((data) => {
-				this.ownLibraries = data
+				this.ownLibraries = [...data].sort((a, b) => {
+					const ia = PROTECTED_LIBS.indexOf(a.name)
+					const ib = PROTECTED_LIBS.indexOf(b.name)
+					return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
+				})
 			}).catch(() => {})
 
 			request({
