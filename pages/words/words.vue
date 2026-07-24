@@ -7,8 +7,8 @@
 					<text class="catalog-name">{{ item.name }}</text>
 					<view class="catalog-meta">
 						<text class="catalog-count">{{ item.word_count }} 词</text>
-						<view class="favorite-btn" @click.stop="toggleFavorite(item)">
-							<image class="favorite-icon" :src="item.favorited ? likeOnSrc : likeSrc" mode="aspectFit" />
+						<view class="favorite-btn" :class="{ on: item.favorited }" @click.stop="toggleFavorite(item)">
+							<text class="favorite-icon">{{ item.favorited ? '★' : '☆' }}</text>
 						</view>
 					</view>
 				</view>
@@ -21,17 +21,13 @@
 import request from '~@/common/requestDesktop'
 import { getNavBarInfo } from '~@/common/util'
 import bgImage from '~@/common/bg-image.vue'
-import likeSrc from '~@/static/like.png'
-import likeOnSrc from '~@/static/like-on.png'
 
 export default {
 	components: { bgImage },
 	data() {
 		return {
 			list: [],
-			safeTop: 0,
-			likeSrc,
-			likeOnSrc
+			safeTop: 0
 		};
 	},
 	onLoad() {
@@ -105,8 +101,13 @@ export default {
 }
 
 .favorite-icon {
-	width: 18px;
-	height: 18px;
+	font-size: 18px;
+	line-height: 1;
+	color: var(--ink-soft);
+}
+
+.favorite-btn.on .favorite-icon {
+	color: var(--highlight-ink);
 }
 
 .catalog-name {
@@ -120,6 +121,7 @@ export default {
 	color: var(--ink-soft);
 	font-size: 12px;
 	font-family: "Courier New", monospace;
+	line-height: 18px;
 }
 
 .catalog-desc {
