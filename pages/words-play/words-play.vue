@@ -129,8 +129,8 @@ export default {
 		}
 	},
 	onLoad(query) {
-		this.id = query.id
-		this.name = decodeURIComponent(query.name || '')
+		this.id = query.id || null
+		this.name = decodeURIComponent(query.name || '') || '全部单词'
 		uni.setNavigationBarTitle({ title: this.name })
 		this.safeTop = getNavBarInfo().top
 		this.getList()
@@ -143,8 +143,9 @@ export default {
 	},
 	methods: {
 		getList() {
+			// 从"单词"tab 带库进来就播那个库；没带（播的是"全部单词"）就查全站词库
 			request({
-				url: `libraries/${this.id}/words`,
+				url: this.id ? `libraries/${this.id}/words` : 'words/list',
 				method: 'GET',
 				data: { page: this.page, page_size: 20 }
 			}).then((data) => {

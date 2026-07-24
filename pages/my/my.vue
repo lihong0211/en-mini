@@ -152,9 +152,8 @@ export default {
 			}).catch(() => {})
 		},
 		openLibrary(lib) {
-			uni.navigateTo({
-				url: `/pages/library-detail/library-detail?id=${lib.id}&name=${encodeURIComponent(lib.name)}`
-			});
+			getApp().globalData.activeLibrary = { id: lib.id, name: lib.name }
+			uni.switchTab({ url: '/pages/words/words' })
 		},
 		onChooseAvatar(e) {
 			const filePath = e.detail.avatarUrl

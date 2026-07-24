@@ -14,7 +14,8 @@ export default {
 		console.log('App Hide')
 	},
 	globalData: {
-		test: ''
+		// 词库 tab 点词库卡片时写入，单词 tab 读来决定显示哪个词库的单词（没有就显示全部单词）
+		activeLibrary: null
 	},
 }
 </script>

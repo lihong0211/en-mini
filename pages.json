@@ -5,7 +5,7 @@
 			"width": "350px"
 		}
 	},
-  "lazyCodeLoading": "requiredComponents",
+	"lazyCodeLoading": "requiredComponents",
 	"topWindow": {
 		"path": "windows/top-window.vue",
 		"style": {
@@ -14,18 +14,39 @@
 	},
 	"pages": [
 		{
-			"path": "pages/words/words",
+			"path": "pages/libraries/libraries",
 			"style": {
-				"navigationBarTitleText": "words",
+				"navigationBarTitleText": "词库",
 				"app-plus": {
 					"bounce": "vertical",
 					"titleNView": {
-						"buttons": [{
-							"text": "",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "22px",
-							"color": "#FFFFFF"
-						}]
+						"buttons": [
+							{
+								"text": "",
+								"fontSrc": "/static/uni.ttf",
+								"fontSize": "22px",
+								"color": "#FFFFFF"
+							}
+						]
+					}
+				}
+			}
+		},
+		{
+			"path": "pages/words/words",
+			"style": {
+				"navigationBarTitleText": "单词",
+				"app-plus": {
+					"bounce": "vertical",
+					"titleNView": {
+						"buttons": [
+							{
+								"text": "",
+								"fontSrc": "/static/uni.ttf",
+								"fontSize": "22px",
+								"color": "#FFFFFF"
+							}
+						]
 					}
 				}
 			}
@@ -37,12 +58,14 @@
 				"app-plus": {
 					"bounce": "vertical",
 					"titleNView": {
-						"buttons": [{
-							"text": "",
-							"fontSrc": "/static/uni.ttf",
-							"fontSize": "22px",
-							"color": "#FFFFFF"
-						}]
+						"buttons": [
+							{
+								"text": "",
+								"fontSrc": "/static/uni.ttf",
+								"fontSize": "22px",
+								"color": "#FFFFFF"
+							}
+						]
 					}
 				}
 			}
@@ -54,9 +77,9 @@
 			}
 		},
 		{
-			"path": "pages/library-detail/library-detail",
+			"path": "pages/words-play/words-play",
 			"style": {
-				"navigationBarTitleText": "词库"
+				"navigationBarTitleText": "播放"
 			}
 		},
 		{
@@ -65,10 +88,8 @@
 				"navigationBarTitleText": "卡片堆叠试验"
 			}
 		}
-],
-	"subPackages": [
-
 	],
+	"subPackages": [],
 	"globalStyle": {
 		"pageOrientation": "portrait",
 		"navigationBarTitleText": "Hello en",
@@ -86,18 +107,24 @@
 			"navigationBarTextStyle": "black",
 			"navigationBarBackgroundColor": "#F1F1F1"
 		}
-
 	},
 	"tabBar": {
 		"color": "#8b93b0",
 		"selectedColor": "#e879f9",
 		"borderStyle": "white",
 		"backgroundColor": "#14172a",
-		"list": [{
-				"pagePath": "pages/words/words",
+		"list": [
+			{
+				"pagePath": "pages/libraries/libraries",
 				"iconPath": "static/word.png",
 				"selectedIconPath": "static/word-hl.png",
-				"text": "words"
+				"text": "词库"
+			},
+			{
+				"pagePath": "pages/words/words",
+				"iconPath": "static/test.png",
+				"selectedIconPath": "static/test-hl.png",
+				"text": "单词"
 			},
 			{
 				"pagePath": "pages/conversation/conversation",
