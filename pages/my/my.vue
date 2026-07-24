@@ -44,8 +44,11 @@
 				</template>
 			</view>
 
-			<view class="section" v-if="ownLibraries.length">
-				<view class="section-title">自建词库</view>
+			<view class="section">
+				<view class="section-title-row">
+					<text class="section-title">自建词库</text>
+					<text class="section-action" @click="openCreateLibrary">＋ 新建</text>
+				</view>
 				<view class="lib-card" v-for="lib in ownLibraries" :key="lib.id" @click="openLibrary(lib)">
 					<text class="lib-name">{{ lib.name }}</text>
 					<text class="lib-count">{{ lib.word_count }} 词</text>
@@ -76,6 +79,17 @@
 				</view>
 			</view>
 		</view>
+
+		<view class="modal-mask" v-if="showCreateLibrary" @click="closeCreateLibrary">
+			<view class="modal-box" @click.stop>
+				<text class="modal-title">新建词库</text>
+				<input class="modal-input" v-model="newLibraryName" placeholder="词库名称" focus />
+				<view class="modal-actions">
+					<text class="modal-cancel" @click="closeCreateLibrary">取消</text>
+					<text class="modal-confirm" @click="submitCreateLibrary">确定</text>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 <script>
@@ -99,7 +113,9 @@ export default {
 			nicknameDraft: '',
 			credentialMode: null, // 'set' | 'bind' | null
 			credentialUsername: '',
-			credentialPassword: ''
+			credentialPassword: '',
+			showCreateLibrary: false,
+			newLibraryName: ''
 		};
 	},
 	onShow() {
@@ -202,6 +218,28 @@ export default {
 					this.user = data
 				}
 				uni.showToast({ title: '绑定成功', icon: 'success' })
+			}).catch(() => {})
+		},
+		openCreateLibrary() {
+			this.newLibraryName = ''
+			this.showCreateLibrary = true
+		},
+		closeCreateLibrary() {
+			this.showCreateLibrary = false
+		},
+		submitCreateLibrary() {
+			const name = this.newLibraryName.trim()
+			if (!name) {
+				uni.showToast({ title: '请输入词库名称', icon: 'none' })
+				return
+			}
+			request({
+				url: 'libraries/add',
+				data: { name }
+			}).then(() => {
+				this.showCreateLibrary = false
+				this.getLibraries()
+				uni.showToast({ title: '创建成功', icon: 'success' })
 			}).catch(() => {})
 		}
 	}
@@ -351,6 +389,24 @@ export default {
 	color: var(--ink-soft);
 	padding: 0 16px;
 	margin-bottom: 8px;
+}
+
+.section-title-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	padding: 0 16px;
+	margin-bottom: 8px;
+}
+
+.section-title-row .section-title {
+	padding: 0;
+	margin-bottom: 0;
+}
+
+.section-action {
+	font-size: 13px;
+	color: var(--margin);
 }
 
 .lib-card {
