@@ -104,6 +104,8 @@ export default {
 	font-size: 18px;
 	line-height: 1;
 	color: var(--ink-soft);
+	/* ★ 字形在字号内偏下沉，视觉上跟旁边文字对不齐，往上提一点 */
+	transform: translateY(-1px);
 }
 
 .favorite-btn.on .favorite-icon {

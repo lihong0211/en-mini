@@ -489,6 +489,8 @@ export default {
 	font-size: 18px;
 	line-height: 1;
 	color: var(--ink-soft);
+	/* ★ 字形在字号内偏下沉，跟旁边的心形图标对不齐，往上提一点 */
+	transform: translateY(-1px);
 }
 
 .word-star-btn.on .word-star-icon {
