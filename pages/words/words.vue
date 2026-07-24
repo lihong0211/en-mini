@@ -11,6 +11,7 @@
 			</view>
 
 			<view class="search-bar">
+				<image class="search-icon-inline" src="/static/搜索.png" mode="aspectFit" @click="onSearchConfirm" />
 				<input
 					class="search-input"
 					v-model="searchText"
@@ -18,8 +19,8 @@
 					confirm-type="search"
 					@confirm="onSearchConfirm"
 				/>
-				<text class="search-btn" @click="onSearchConfirm">搜索</text>
-				<text v-if="searchResult" class="search-clear" @click="clearSearch">清空</text>
+				<image v-if="searchText || searchResult" class="search-clear-inline" src="/static/清空-2-小.png"
+					mode="aspectFit" @click="clearSearch" />
 			</view>
 
 			<view v-if="searchLoading" class="nb-empty">查询中…</view>
@@ -211,31 +212,40 @@ export default {
 }
 
 .search-bar {
+	position: relative;
 	display: flex;
 	align-items: center;
-	gap: 8px;
 	margin: 10px 16px 0;
 }
 
 .search-input {
-	flex: 1;
+	width: 100%;
+	box-sizing: border-box;
 	background: var(--paper);
 	border: 1px solid rgba(232, 121, 249, 0.25);
 	border-radius: 20px;
-	padding: 8px 14px;
+	padding: 8px 36px;
 	color: var(--ink);
 	font-size: 14px;
 }
 
-.search-btn {
-	color: var(--highlight-ink);
-	font-size: 14px;
-	font-weight: 700;
+.search-icon-inline {
+	position: absolute;
+	left: 12px;
+	width: 16px;
+	height: 16px;
+	/* 原图是纯黑线稿，深色底下看不清，滤成白色再压一点透明度 */
+	filter: brightness(0) invert(1);
+	opacity: 0.55;
 }
 
-.search-clear {
-	color: var(--ink-soft);
-	font-size: 13px;
+.search-clear-inline {
+	position: absolute;
+	right: 12px;
+	width: 14px;
+	height: 14px;
+	filter: brightness(0) invert(1);
+	opacity: 0.5;
 }
 
 .word-row {
