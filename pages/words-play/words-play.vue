@@ -487,10 +487,11 @@ export default {
 }
 
 .word-star-icon {
-	font-size: 18px;
+	font-size: 24px;
 	line-height: 1;
 	color: var(--ink-soft);
-	/* ★ 字形在字号内偏下沉，跟旁边的心形图标对不齐，往上提一点 */
+	/* ★ 字形在字号内偏下沉，跟旁边的心形图标对不齐，往上提一点；真机上这个字形
+	   在字号盒子里实际占比比模拟器小很多，字号得比心形图标的像素尺寸大不少 */
 	transform: translateY(-1px);
 }
 

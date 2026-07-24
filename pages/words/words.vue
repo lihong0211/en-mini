@@ -341,7 +341,7 @@ export default {
 }
 
 .word-star-icon {
-	font-size: 18px;
+	font-size: 24px;
 	line-height: 1;
 	color: var(--ink-soft);
 	transform: translateY(-1px);
