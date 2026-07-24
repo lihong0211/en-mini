@@ -130,13 +130,13 @@
 				"pagePath": "pages/conversation/conversation",
 				"iconPath": "static/conversation.png",
 				"selectedIconPath": "static/conversation-hl.png",
-				"text": "conversation"
+				"text": "对话"
 			},
 			{
 				"pagePath": "pages/my/my",
 				"iconPath": "static/my.png",
 				"selectedIconPath": "static/my-hl.png",
-				"text": "profile"
+				"text": "我的"
 			}
 		]
 	}
