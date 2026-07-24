@@ -180,11 +180,8 @@ export default {
 /* list-page.css 的 .content 高度只减了分页条，这个页面顶部还多了 scope-row +
    search-bar 这段固定头，不然滚动的时候会把它们也带着一起滚 */
 .content {
-	height: calc(100vh - 70px - var(--safe-top, 0px) - 84px);
-	/* 列表第一项的 margin-top 会跟 .content 顶边"贴"在一起（margin collapse），
-	   用 padding 顶开一段，padding 不会被这样吃掉 */
-	padding-top: 10px;
-	box-sizing: border-box;
+	height: calc(100vh - 70px - var(--safe-top, 0px) - 94px);
+	margin-top: 10px;
 }
 
 .scope-row {
