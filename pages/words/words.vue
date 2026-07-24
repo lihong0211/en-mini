@@ -212,38 +212,43 @@ export default {
 }
 
 .search-bar {
-	position: relative;
+	/* 图标和输入框都是普通 flex 子元素，不用绝对定位叠在 input 上——
+	   小程序原生 input 的 padding 不一定能跟绝对定位的兄弟元素配合好，
+	   实测会导致 placeholder 文字跟图标错位重叠。胶囊形状的边框/背景挪到
+	   这个外层容器上，input 本身透明无边框，天然不会有重叠问题 */
 	display: flex;
 	align-items: center;
+	gap: 8px;
 	margin: 10px 16px 0;
-}
-
-.search-input {
-	width: 100%;
-	box-sizing: border-box;
+	padding: 8px 14px;
 	background: var(--paper);
 	border: 1px solid rgba(232, 121, 249, 0.25);
 	border-radius: 20px;
-	padding: 8px 36px;
+}
+
+.search-input {
+	flex: 1;
+	min-width: 0;
+	background: transparent;
+	border: none;
+	padding: 0;
 	color: var(--ink);
 	font-size: 14px;
 }
 
 .search-icon-inline {
-	position: absolute;
-	left: 12px;
 	width: 16px;
 	height: 16px;
+	flex-shrink: 0;
 	/* 原图是纯黑线稿，深色底下看不清，滤成白色再压一点透明度 */
 	filter: brightness(0) invert(1);
 	opacity: 0.55;
 }
 
 .search-clear-inline {
-	position: absolute;
-	right: 12px;
 	width: 14px;
 	height: 14px;
+	flex-shrink: 0;
 	filter: brightness(0) invert(1);
 	opacity: 0.5;
 }
