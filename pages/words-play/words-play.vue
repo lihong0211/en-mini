@@ -72,10 +72,10 @@ import likeOnSrc from '~@/static/like-on.png'
 import modeOrderSrc from '~@/static/mode-order.png'
 import modeShuffleSrc from '~@/static/mode-shuffle.png'
 import modeSingleSrc from '~@/static/mode-single.png'
-import sentenceReadSrc from '~@/static/例句跟读.png'
-import sentenceReadOnSrc from '~@/static/例句跟读-on.png'
-import autoAdvanceSrc from '~@/static/自动播放.png'
-import autoAdvanceOnSrc from '~@/static/自动播放-on.png'
+import sentenceReadSrc from '~@/static/sentence-read.png'
+import sentenceReadOnSrc from '~@/static/sentence-read-on.png'
+import autoAdvanceSrc from '~@/static/auto-advance.png'
+import autoAdvanceOnSrc from '~@/static/auto-advance-on.png'
 
 const PLAY_MODES = ['order', 'shuffle', 'single']
 const SINGLE_REPEAT_DELAY = 1500

@@ -11,7 +11,7 @@
 			</view>
 
 			<view class="search-bar">
-				<image class="search-icon-inline" src="/static/搜索.png" mode="aspectFit" @click="onSearchConfirm" />
+				<image class="search-icon-inline" src="/static/search.png" mode="aspectFit" @click="onSearchConfirm" />
 				<input
 					class="search-input"
 					v-model="searchText"
@@ -19,7 +19,7 @@
 					confirm-type="search"
 					@confirm="onSearchConfirm"
 				/>
-				<image v-if="searchText || searchResult" class="search-clear-inline" src="/static/清空-2-小.png"
+				<image v-if="searchText || searchResult" class="search-clear-inline" src="/static/clear.png"
 					mode="aspectFit" @click="clearSearch" />
 			</view>
 
