@@ -1,28 +1,28 @@
 <template>
 	<view class="uni-container" :style="{ '--safe-top': safeTop + 'px' }">
 		<bg-image />
+		<view class="scope-row">
+			<text class="scope-name">{{ libraryName }}</text>
+			<view class="play-entry" @click="goPlay">
+				<text class="play-icon">▶</text>
+				<text class="play-text">播放</text>
+			</view>
+		</view>
+
+		<view class="search-bar">
+			<image class="search-icon-inline" src="/static/search.png" mode="aspectFit" @click="onSearchConfirm" />
+			<input
+				class="search-input"
+				v-model="searchText"
+				placeholder="搜索单词…"
+				confirm-type="search"
+				@confirm="onSearchConfirm"
+			/>
+			<image v-if="searchText || searchResult" class="search-clear-inline" src="/static/clear.png"
+				mode="aspectFit" @click="clearSearch" />
+		</view>
+
 		<view class="content">
-			<view class="scope-row">
-				<text class="scope-name">{{ libraryName }}</text>
-				<view class="play-entry" @click="goPlay">
-					<text class="play-icon">▶</text>
-					<text class="play-text">播放</text>
-				</view>
-			</view>
-
-			<view class="search-bar">
-				<image class="search-icon-inline" src="/static/search.png" mode="aspectFit" @click="onSearchConfirm" />
-				<input
-					class="search-input"
-					v-model="searchText"
-					placeholder="搜索单词…"
-					confirm-type="search"
-					@confirm="onSearchConfirm"
-				/>
-				<image v-if="searchText || searchResult" class="search-clear-inline" src="/static/clear.png"
-					mode="aspectFit" @click="clearSearch" />
-			</view>
-
 			<view v-if="searchLoading" class="nb-empty">查询中…</view>
 
 			<view v-else-if="searchResult" class="result-card">
@@ -176,6 +176,12 @@ export default {
 @import '~@/common/uni-nvue.css';
 @import '~@/common/list-page.css';
 @import '~@/common/notebook-theme.css';
+
+/* list-page.css 的 .content 高度只减了分页条，这个页面顶部还多了 scope-row +
+   search-bar 这段固定头，不然滚动的时候会把它们也带着一起滚 */
+.content {
+	height: calc(100vh - 70px - var(--safe-top, 0px) - 84px);
+}
 
 .scope-row {
 	display: flex;
