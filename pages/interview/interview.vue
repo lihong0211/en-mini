@@ -24,6 +24,16 @@
 						<text class="q-chip" v-for="(kp, i) in splitKeyPoints(item.key_points)" :key="i">{{ kp }}</text>
 					</view>
 					<text class="q-spoken-desc">{{ item.spoken_desc }}</text>
+
+					<view class="q-audio-list">
+						<view class="q-audio-row" v-for="audio in item.audios" :key="audio.id">
+							<text class="q-audio-name" @click="playAudio(audio)">▶ {{ audio.display_name }}</text>
+							<text class="q-audio-delete" @click="onDeleteAudio(item, audio)">删除</text>
+						</view>
+					</view>
+					<view class="q-record-btn" :class="{ recording: recordingQuestionId === item.id }" @click="onToggleRecord(item)">
+						{{ recordingQuestionId === item.id ? '● 停止录音' : '录音' }}
+					</view>
 				</view>
 
 				<view v-if="!filteredList.length" class="nb-empty">还没有题目</view>
@@ -33,7 +43,7 @@
 </template>
 
 <script>
-import request from '~@/common/requestEnglish'
+import request, { uploadFile } from '~@/common/requestEnglish'
 import { getNavBarInfo } from '~@/common/util'
 import bgImage from '~@/common/bg-image.vue'
 
@@ -47,8 +57,26 @@ export default {
 			loading: false,
 			safeTop: 0,
 			categoryFilter: '全部',
-			masteryFilter: '全部'
+			masteryFilter: '全部',
+			recordingQuestionId: null,
+			recorderManager: null,
+			audioContext: null
 		}
+	},
+	onLoad() {
+		this.recorderManager = uni.getRecorderManager()
+		this.audioContext = uni.createInnerAudioContext()
+		this.recorderManager.onStop((res) => {
+			const questionId = this.recordingQuestionId
+			this.recordingQuestionId = null
+			if (!questionId) return
+			uploadFile('interview/audio/upload', res.tempFilePath, { question_id: String(questionId) })
+				.then((audio) => {
+					const target = this.list.find((q) => q.id === questionId)
+					if (target) target.audios.push(audio)
+				})
+				.catch(() => {})
+		})
 	},
 	onShow() {
 		this.safeTop = getNavBarInfo().top
@@ -105,6 +133,46 @@ export default {
 						data: { id: item.id, mastery }
 					}).then(() => {
 						item.mastery = mastery
+					}).catch(() => {})
+				}
+			})
+		},
+		onToggleRecord(item) {
+			if (this.recordingQuestionId === item.id) {
+				this.recorderManager.stop()
+				return
+			}
+			if (this.recordingQuestionId) {
+				uni.showToast({ title: '有一条录音正在进行', icon: 'none' })
+				return
+			}
+			uni.authorize({
+				scope: 'scope.record',
+				success: () => {
+					this.recordingQuestionId = item.id
+					this.recorderManager.start({ format: 'mp3' })
+				},
+				fail: () => {
+					uni.showModal({
+						title: '需要麦克风权限',
+						content: '请在设置中开启录音权限',
+						showCancel: false
+					})
+				}
+			})
+		},
+		playAudio(audio) {
+			this.audioContext.src = audio.url
+			this.audioContext.play()
+		},
+		onDeleteAudio(item, audio) {
+			uni.showModal({
+				title: '删除录音',
+				content: `确定删除「${audio.display_name}」？`,
+				success: (res) => {
+					if (!res.confirm) return
+					request({ url: 'interview/audio/delete', data: { id: audio.id } }).then(() => {
+						item.audios = item.audios.filter((a) => a.id !== audio.id)
 					}).catch(() => {})
 				}
 			})
@@ -190,5 +258,41 @@ export default {
 	color: var(--ink-soft);
 	font-size: 14px;
 	line-height: 1.6;
+}
+
+.q-audio-list {
+	margin-top: 10px;
+}
+
+.q-audio-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 6px 0;
+}
+
+.q-audio-name {
+	color: var(--ink);
+	font-size: 13px;
+}
+
+.q-audio-delete {
+	color: var(--ink-soft);
+	font-size: 12px;
+}
+
+.q-record-btn {
+	margin-top: 10px;
+	display: inline-block;
+	color: var(--margin);
+	font-size: 13px;
+	padding: 6px 14px;
+	border-radius: 8px;
+	border: 1px solid var(--margin);
+}
+
+.q-record-btn.recording {
+	color: #fff;
+	background-color: var(--margin);
 }
 </style>
