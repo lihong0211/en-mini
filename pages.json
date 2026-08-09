@@ -87,6 +87,12 @@
 			"style": {
 				"navigationBarTitleText": "卡片堆叠试验"
 			}
+		},
+		{
+			"path": "pages/interview/interview",
+			"style": {
+				"navigationBarTitleText": "面试题"
+			}
 		}
 	],
 	"subPackages": [],
@@ -137,6 +143,12 @@
 				"iconPath": "static/my.png",
 				"selectedIconPath": "static/my-hl.png",
 				"text": "我的"
+			},
+			{
+				"pagePath": "pages/interview/interview",
+				"iconPath": "static/test.png",
+				"selectedIconPath": "static/test-hl.png",
+				"text": "面试题"
 			}
 		]
 	}
