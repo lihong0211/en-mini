@@ -17,7 +17,7 @@
 				<view class="q-card" v-for="item in filteredList" :key="item.id">
 					<view class="q-header">
 						<text class="q-title">{{ item.question }}</text>
-						<text class="q-mastery">{{ item.mastery }}</text>
+						<text class="q-mastery" @click="onChangeMastery(item)">{{ item.mastery }}</text>
 					</view>
 					<text v-if="item.category" class="q-category">{{ item.category }}</text>
 					<view class="q-key-points">
@@ -36,6 +36,8 @@
 import request from '~@/common/requestEnglish'
 import { getNavBarInfo } from '~@/common/util'
 import bgImage from '~@/common/bg-image.vue'
+
+const MASTERY_LEVELS = ['未复习', '需加强', '基本掌握', '已掌握']
 
 export default {
 	components: { bgImage },
@@ -91,6 +93,21 @@ export default {
 		},
 		onMasteryChange(e) {
 			this.masteryFilter = this.masteryPickerRange[e.detail.value]
+		},
+		onChangeMastery(item) {
+			uni.showActionSheet({
+				itemList: MASTERY_LEVELS,
+				success: (res) => {
+					const mastery = MASTERY_LEVELS[res.tapIndex]
+					if (mastery === item.mastery) return
+					request({
+						url: 'interview/mastery/update',
+						data: { id: item.id, mastery }
+					}).then(() => {
+						item.mastery = mastery
+					}).catch(() => {})
+				}
+			})
 		}
 	}
 }
