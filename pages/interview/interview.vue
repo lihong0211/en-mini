@@ -10,7 +10,7 @@
 					<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
 				</picker>
 			</view>
-			<view class="play-entry" @click="onOpenPlayMenu">▶ 播放</view>
+			<view class="play-entry" @click="onPlay">▶ 播放</view>
 
 			<view v-if="loading" class="nb-empty">加载中…</view>
 
@@ -57,7 +57,7 @@ export default {
 			categoryFilter: '全部',
 			masteryFilter: '全部',
 			carousel,
-			carouselState: { mode: null, queue: [], index: -1, playing: false },
+			carouselState: { queue: [], index: -1, playing: false },
 			unsubscribeCarousel: null
 		}
 	},
@@ -132,14 +132,8 @@ export default {
 				}
 			})
 		},
-		onOpenPlayMenu() {
-			uni.showActionSheet({
-				itemList: ['AI 朗读', '我的录音'],
-				success: (res) => {
-					const mode = res.tapIndex === 0 ? this.carousel.MODE_TTS : this.carousel.MODE_RECORDING
-					this.carousel.start(this.filteredList, mode)
-				}
-			})
+		onPlay() {
+			this.carousel.start(this.filteredList)
 		},
 		onTogglePlay() {
 			if (this.carouselState.playing) {

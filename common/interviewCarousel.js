@@ -1,36 +1,4 @@
-export function splitIntoChunks(text, maxLen = 200) {
-	const parts = (text || '').split(/([。！？；\n])/).filter(Boolean)
-	const sentences = []
-	for (let i = 0; i < parts.length; i += 2) {
-		sentences.push(parts[i] + (parts[i + 1] || ''))
-	}
-	if (!sentences.length) return []
-
-	const chunks = []
-	let current = ''
-	for (const sentence of sentences) {
-		if (current && current.length + sentence.length > maxLen) {
-			chunks.push(current)
-			current = sentence
-		} else {
-			current += sentence
-		}
-	}
-	if (current) chunks.push(current)
-	return chunks
-}
-
-const MODE_TTS = 'tts'
-const MODE_RECORDING = 'recording'
-
-function buildQueue(questions, mode) {
-	if (mode === MODE_TTS) {
-		return questions.map((q) => ({
-			id: q.id,
-			title: q.question,
-			text: `${q.question}。${q.spoken_desc}`
-		}))
-	}
+function buildQueue(questions) {
 	return questions
 		.filter((q) => q.audios && q.audios.length)
 		.map((q) => ({
@@ -41,17 +9,14 @@ function buildQueue(questions, mode) {
 }
 
 const state = {
-	mode: null,
 	queue: [],
 	index: -1,
-	chunks: [],
-	chunkIndex: 0,
 	playing: false
 }
 
 const listeners = new Set()
 function notify() {
-	const snapshot = { mode: state.mode, queue: state.queue, index: state.index, playing: state.playing }
+	const snapshot = { queue: state.queue, index: state.index, playing: state.playing }
 	listeners.forEach((fn) => fn(snapshot))
 }
 function onStateChange(fn) {
@@ -74,66 +39,23 @@ function getAudioManager() {
 }
 // #endif
 
-function playCurrentChunk() {
-	const item = state.queue[state.index]
-	const chunk = state.chunks[state.chunkIndex]
-	if (!item || !chunk) {
-		advance()
-		return
-	}
-	// #ifdef MP-WEIXIN
-	const plugin = requirePlugin('WechatSI')
-	plugin.textToSpeech({
-		lang: 'zh_CN',
-		tts: true,
-		content: chunk,
-		success: (res) => {
-			const manager = getAudioManager()
-			manager.title = item.title
-			manager.epname = item.title
-			manager.src = res.filename
-			state.playing = true
-			notify()
-		},
-		fail: (err) => {
-			console.error('[interviewCarousel] TTS合成失败，跳过这一段', err)
-			state.chunkIndex += 1
-			playCurrentChunk()
-		}
-	})
-	// #endif
-}
-
 function playCurrentItem() {
 	const item = state.queue[state.index]
 	if (!item) {
 		stop()
 		return
 	}
-	if (state.mode === MODE_RECORDING) {
-		// #ifdef MP-WEIXIN
-		const manager = getAudioManager()
-		manager.title = item.title
-		manager.epname = item.title
-		manager.src = item.url
-		// #endif
-		state.playing = true
-		notify()
-		return
-	}
-	state.chunks = splitIntoChunks(item.text)
-	state.chunkIndex = 0
-	playCurrentChunk()
+	// #ifdef MP-WEIXIN
+	const manager = getAudioManager()
+	manager.title = item.title
+	manager.epname = item.title
+	manager.src = item.url
+	// #endif
+	state.playing = true
+	notify()
 }
 
 function advance() {
-	if (state.mode === MODE_TTS) {
-		state.chunkIndex += 1
-		if (state.chunkIndex < state.chunks.length) {
-			playCurrentChunk()
-			return
-		}
-	}
 	state.index += 1
 	if (state.index >= state.queue.length) {
 		stop()
@@ -144,16 +66,12 @@ function advance() {
 	notify()
 }
 
-function start(questions, mode) {
-	const queue = buildQueue(questions, mode)
+function start(questions) {
+	const queue = buildQueue(questions)
 	if (!queue.length) {
-		uni.showToast({
-			title: mode === MODE_TTS ? '没有可朗读的题目' : '还没有录音',
-			icon: 'none'
-		})
+		uni.showToast({ title: '还没有录音', icon: 'none' })
 		return false
 	}
-	state.mode = mode
 	state.queue = queue
 	state.index = 0
 	playCurrentItem()
@@ -197,18 +115,13 @@ function stop() {
 	// #ifdef MP-WEIXIN
 	if (audioManager) audioManager.stop()
 	// #endif
-	state.mode = null
 	state.queue = []
 	state.index = -1
-	state.chunks = []
-	state.chunkIndex = 0
 	state.playing = false
 	notify()
 }
 
 export default {
-	MODE_TTS,
-	MODE_RECORDING,
 	start,
 	pause,
 	resume,
