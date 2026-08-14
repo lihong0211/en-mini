@@ -93,6 +93,12 @@
 			"style": {
 				"navigationBarTitleText": "面试题"
 			}
+		},
+		{
+			"path": "pages/interview/detail",
+			"style": {
+				"navigationBarTitleText": "题目详情"
+			}
 		}
 	],
 	"subPackages": [],
