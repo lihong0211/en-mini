@@ -87,8 +87,12 @@ export default {
 		fetchQuestion() {
 			this.loading = true
 			request({ url: 'interview/list' }).then((data) => {
+				console.log('[interview-detail] questionId=', this.questionId, '返回的id列表=', data.map((q) => q.id))
 				this.question = data.find((q) => q.id === this.questionId) || null
-			}).catch(() => {}).finally(() => {
+			}).catch((err) => {
+				console.error('[interview-detail] 拉取题目列表失败', err)
+				uni.showToast({ title: '加载失败: ' + (err.message || err.errMsg || ''), icon: 'none' })
+			}).finally(() => {
 				this.loading = false
 			})
 		},
