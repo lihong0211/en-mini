@@ -10,6 +10,7 @@
 					<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
 				</picker>
 			</view>
+			<view class="play-entry" @click="onOpenPlayMenu">▶ 播放</view>
 
 			<view v-if="loading" class="nb-empty">加载中…</view>
 
@@ -25,6 +26,16 @@
 				<view v-if="!filteredList.length" class="nb-empty">还没有题目</view>
 			</template>
 		</view>
+		<view v-if="carouselState.index >= 0" class="carousel-bar">
+			<text class="carousel-title">{{ carouselState.queue[carouselState.index].title }}</text>
+			<view class="carousel-controls">
+				<text class="carousel-btn" @click="carousel.prev()">‹‹</text>
+				<text class="carousel-btn" @click="onTogglePlay">{{ carouselState.playing ? '❚❚' : '▶' }}</text>
+				<text class="carousel-btn" @click="carousel.next()">››</text>
+				<text class="carousel-progress">{{ carouselState.index + 1 }}/{{ carouselState.queue.length }}</text>
+				<text class="carousel-btn" @click="carousel.stop()">✕</text>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -32,6 +43,7 @@
 import request from '~@/common/requestEnglish'
 import { getNavBarInfo } from '~@/common/util'
 import bgImage from '~@/common/bg-image.vue'
+import carousel from '~@/common/interviewCarousel'
 
 const MASTERY_LEVELS = ['未复习', '需加强', '基本掌握', '已掌握']
 
@@ -43,12 +55,24 @@ export default {
 			loading: false,
 			safeTop: 0,
 			categoryFilter: '全部',
-			masteryFilter: '全部'
+			masteryFilter: '全部',
+			carousel,
+			carouselState: { mode: null, queue: [], index: -1, playing: false },
+			unsubscribeCarousel: null
 		}
+	},
+	onLoad() {
+		this.unsubscribeCarousel = this.carousel.onStateChange((state) => {
+			this.carouselState = state
+		})
 	},
 	onShow() {
 		this.safeTop = getNavBarInfo().top
 		this.fetchList()
+	},
+	onUnload() {
+		if (this.unsubscribeCarousel) this.unsubscribeCarousel()
+		this.carousel.stop()
 	},
 	computed: {
 		categoryPickerRange() {
@@ -108,6 +132,22 @@ export default {
 				}
 			})
 		},
+		onOpenPlayMenu() {
+			uni.showActionSheet({
+				itemList: ['AI 朗读', '我的录音'],
+				success: (res) => {
+					const mode = res.tapIndex === 0 ? this.carousel.MODE_TTS : this.carousel.MODE_RECORDING
+					this.carousel.start(this.filteredList, mode)
+				}
+			})
+		},
+		onTogglePlay() {
+			if (this.carouselState.playing) {
+				this.carousel.pause()
+			} else {
+				this.carousel.resume()
+			}
+		},
 	}
 }
 </script>
@@ -116,9 +156,60 @@ export default {
 @import '~@/common/notebook-theme.css';
 
 .filter-bar {
+	position: relative;
 	display: flex;
 	gap: 10px;
 	margin: 0 16px 16px;
+}
+
+.play-entry {
+	position: absolute;
+	right: 16px;
+	top: 0;
+	color: var(--margin);
+	font-size: 13px;
+	padding: 6px 12px;
+	border-radius: 8px;
+	border: 1px solid var(--margin);
+}
+
+.carousel-bar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+	background-color: var(--paper-deep);
+	border-top: 1px solid var(--rule);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.carousel-title {
+	color: var(--ink);
+	font-size: 13px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.carousel-controls {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.carousel-btn {
+	color: var(--margin);
+	font-size: 16px;
+}
+
+.carousel-progress {
+	flex: 1;
+	text-align: right;
+	color: var(--ink-soft);
+	font-size: 12px;
 }
 
 .filter-item {
