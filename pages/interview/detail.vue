@@ -12,7 +12,10 @@
 				</view>
 				<text v-if="question.category" class="q-category">{{ question.category }}</text>
 				<view class="q-key-points">
-					<text class="q-chip" v-for="(kp, i) in splitKeyPoints(question.key_points)" :key="i">{{ kp }}</text>
+					<view class="q-kp-item" v-for="(kp, i) in splitKeyPoints(question.key_points)" :key="i">
+						<text v-if="kp.label" class="q-kp-label">{{ kp.label }}</text>
+						<text class="q-kp-content">{{ kp.content }}</text>
+					</view>
 				</view>
 				<text class="q-spoken-desc">{{ question.spoken_desc }}</text>
 
@@ -90,7 +93,16 @@ export default {
 			})
 		},
 		splitKeyPoints(keyPoints) {
-			return (keyPoints || '').split(',').map((s) => s.trim()).filter(Boolean)
+			return (keyPoints || '')
+				.split('\n')
+				.map((line) => line.trim())
+				.filter(Boolean)
+				.map((line) => {
+					const idx = line.indexOf('——')
+					const label = idx === -1 ? '' : line.slice(0, idx)
+					const content = (idx === -1 ? line : line.slice(idx + 2)).replace(/。$/, '')
+					return { label, content }
+				})
 		},
 		onChangeMastery() {
 			uni.showActionSheet({
@@ -198,17 +210,25 @@ export default {
 
 .q-key-points {
 	margin-top: 10px;
-	display: flex;
-	flex-wrap: wrap;
 }
 
-.q-chip {
-	color: var(--highlight-ink);
-	font-size: 12px;
+.q-kp-item {
+	font-size: 13px;
+	line-height: 1.6;
 	background-color: rgba(245, 185, 64, 0.12);
-	border-radius: 6px;
-	padding: 3px 8px;
-	margin: 0 6px 6px 0;
+	border-radius: 8px;
+	padding: 8px 10px;
+	margin-bottom: 6px;
+}
+
+.q-kp-label {
+	color: var(--highlight-ink);
+	font-weight: 600;
+	margin-right: 4px;
+}
+
+.q-kp-content {
+	color: var(--ink-soft);
 }
 
 .q-spoken-desc {
