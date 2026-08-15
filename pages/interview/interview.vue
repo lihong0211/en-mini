@@ -3,14 +3,16 @@
 		<bg-image />
 		<view class="nb-scroll">
 			<view class="filter-bar">
-				<picker :range="categoryPickerRange" :value="categoryPickerIndex" @change="onCategoryChange">
-					<view class="filter-item">{{ categoryPickerRange[categoryPickerIndex] }}</view>
-				</picker>
-				<picker :range="masteryPickerRange" :value="masteryPickerIndex" @change="onMasteryChange">
-					<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
-				</picker>
+				<view class="filter-pickers">
+					<picker :range="categoryPickerRange" :value="categoryPickerIndex" @change="onCategoryChange">
+						<view class="filter-item">{{ categoryPickerRange[categoryPickerIndex] }}</view>
+					</picker>
+					<picker :range="masteryPickerRange" :value="masteryPickerIndex" @change="onMasteryChange">
+						<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
+					</picker>
+				</view>
+				<view class="play-entry" @click="onPlay">▶ 播放</view>
 			</view>
-			<view class="play-entry" @click="onPlay">▶ 播放</view>
 
 			<view v-if="loading" class="nb-empty">加载中…</view>
 
@@ -150,21 +152,24 @@ export default {
 @import '~@/common/notebook-theme.css';
 
 .filter-bar {
-	position: relative;
 	display: flex;
-	gap: 10px;
+	justify-content: space-between;
+	align-items: center;
 	margin: 0 16px 16px;
 }
 
+.filter-pickers {
+	display: flex;
+	gap: 10px;
+}
+
 .play-entry {
-	position: absolute;
-	right: 16px;
-	top: 0;
 	color: var(--margin);
 	font-size: 13px;
 	padding: 6px 12px;
 	border-radius: 8px;
 	border: 1px solid var(--margin);
+	white-space: nowrap;
 }
 
 .carousel-bar {
