@@ -1,19 +1,18 @@
 <template>
 	<view class="nb-page" :style="{ '--safe-top': safeTop + 'px' }">
 		<bg-image />
-		<view class="nb-scroll">
-			<view class="filter-bar">
-				<view class="filter-pickers">
-					<picker :range="categoryPickerRange" :value="categoryPickerIndex" @change="onCategoryChange">
-						<view class="filter-item">{{ categoryPickerRange[categoryPickerIndex] }}</view>
-					</picker>
-					<picker :range="masteryPickerRange" :value="masteryPickerIndex" @change="onMasteryChange">
-						<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
-					</picker>
-				</view>
-				<view class="play-entry" @click="onPlay">▶ 播放</view>
+		<view class="filter-bar" :style="{ top: safeTop + 'px' }">
+			<view class="filter-pickers">
+				<picker :range="categoryPickerRange" :value="categoryPickerIndex" @change="onCategoryChange">
+					<view class="filter-item">{{ categoryPickerRange[categoryPickerIndex] }}</view>
+				</picker>
+				<picker :range="masteryPickerRange" :value="masteryPickerIndex" @change="onMasteryChange">
+					<view class="filter-item">{{ masteryPickerRange[masteryPickerIndex] }}</view>
+				</picker>
 			</view>
-
+			<view class="play-entry" @click="onPlay">▶ 播放</view>
+		</view>
+		<view class="nb-scroll">
 			<view v-if="loading" class="nb-empty">加载中…</view>
 
 			<template v-else>
@@ -152,10 +151,21 @@ export default {
 @import '~@/common/notebook-theme.css';
 
 .filter-bar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: 10;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin: 0 16px 16px;
+	padding: 12px 16px;
+	background-color: var(--paper-deep);
+	border-bottom: 1px solid var(--rule);
+	box-sizing: border-box;
+}
+
+.nb-scroll {
+	padding-top: 68px;
 }
 
 .filter-pickers {
