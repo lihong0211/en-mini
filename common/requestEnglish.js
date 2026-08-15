@@ -21,6 +21,7 @@ export function uploadFile(url, filePath, formData) {
 			filePath,
 			name: 'file',
 			formData,
+			timeout: 120000, // 默认60秒对大录音文件太短，弱网下传不完就超时
 			success: (res) => {
 				let body
 				try {
@@ -38,7 +39,8 @@ export function uploadFile(url, filePath, formData) {
 				resolve(body.data)
 			},
 			fail: (err) => {
-				uni.showToast({ title: '上传失败', icon: 'none' })
+				console.error('[uploadFile] 上传失败', err)
+				uni.showToast({ title: `上传失败: ${err.errMsg || ''}`, icon: 'none' })
 				reject(err)
 			}
 		})

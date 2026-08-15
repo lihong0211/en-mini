@@ -5,7 +5,13 @@ import {
 
 export default {
 	onLaunch: function () {
-
+		// #ifdef MP-WEIXIN
+		// 面试题复习是私人功能，只在体验版/开发版展示，正式版隐藏这个 tab
+		const { miniProgram } = uni.getAccountInfoSync()
+		if (miniProgram.envVersion === 'release') {
+			uni.hideTabBarItem({ index: 4 })
+		}
+		// #endif
 	},
 	onShow: function () {
 		console.log('App Show')
