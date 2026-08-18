@@ -5,7 +5,8 @@
 		<view class="nb-scroll">
 			<view v-if="loading" class="nb-empty">加载中…</view>
 			<view v-else-if="!question" class="nb-empty">题目不存在</view>
-			<view v-else class="q-card">
+			<view v-else class="q-card" @touchstart="onTouchStart" @touchend="onTouchEnd">
+				<text class="q-progress">{{ currentIndex() + 1 }}/{{ allQuestions.length }}</text>
 				<view class="q-header">
 					<text class="q-title">{{ question.question }}</text>
 					<text class="q-mastery" @click="onChangeMastery">{{ question.mastery }}</text>
@@ -47,12 +48,15 @@ export default {
 		return {
 			questionId: null,
 			question: null,
+			allQuestions: [],
 			loading: false,
 			safeTop: 0,
 			recording: false,
 			recorderManager: null,
 			audioContext: null,
-			playingAudioId: null
+			playingAudioId: null,
+			touchStartX: 0,
+			touchStartY: 0
 		}
 	},
 	onLoad(query) {
@@ -87,7 +91,7 @@ export default {
 		fetchQuestion() {
 			this.loading = true
 			request({ url: 'interview/list' }).then((data) => {
-				console.log('[interview-detail] questionId=', this.questionId, '返回的id列表=', data.map((q) => q.id))
+				this.allQuestions = data
 				this.question = data.find((q) => q.id === this.questionId) || null
 			}).catch((err) => {
 				console.error('[interview-detail] 拉取题目列表失败', err)
@@ -95,6 +99,35 @@ export default {
 			}).finally(() => {
 				this.loading = false
 			})
+		},
+		currentIndex() {
+			return this.allQuestions.findIndex((q) => q.id === this.questionId)
+		},
+		goToOffset(offset) {
+			if (this.recording) return
+			const idx = this.currentIndex()
+			if (idx === -1) return
+			const nextIdx = idx + offset
+			if (nextIdx < 0 || nextIdx >= this.allQuestions.length) {
+				uni.showToast({ title: offset > 0 ? '已经是最后一题' : '已经是第一题', icon: 'none' })
+				return
+			}
+			if (this.playingAudioId) {
+				this.audioContext.stop()
+			}
+			const next = this.allQuestions[nextIdx]
+			this.questionId = next.id
+			this.question = next
+		},
+		onTouchStart(e) {
+			this.touchStartX = e.touches[0].clientX
+			this.touchStartY = e.touches[0].clientY
+		},
+		onTouchEnd(e) {
+			const dx = e.changedTouches[0].clientX - this.touchStartX
+			const dy = e.changedTouches[0].clientY - this.touchStartY
+			if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return
+			this.goToOffset(dx < 0 ? 1 : -1)
 		},
 		splitKeyPoints(keyPoints) {
 			return (keyPoints || '')
@@ -180,6 +213,14 @@ export default {
 	border-radius: 12px;
 	background-color: var(--paper);
 	border: 1px solid var(--rule);
+}
+
+.q-progress {
+	display: block;
+	text-align: right;
+	color: var(--ink-soft);
+	font-size: 12px;
+	margin-bottom: 8px;
 }
 
 .q-header {
