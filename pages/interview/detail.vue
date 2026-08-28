@@ -87,6 +87,12 @@ export default {
 	onShow() {
 		this.fetchQuestion()
 	},
+	onUnload() {
+		this.audioContext.stop()
+		if (this.recording) {
+			this.recorderManager.stop()
+		}
+	},
 	methods: {
 		fetchQuestion() {
 			this.loading = true
