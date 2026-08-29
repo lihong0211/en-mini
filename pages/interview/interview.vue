@@ -20,6 +20,7 @@
 					<view class="q-row-main">
 						<text class="q-row-title">{{ item.question }}</text>
 						<text v-if="item.category" class="q-row-category">{{ mainCategory(item.category) }}</text>
+						<text v-if="item.audios && item.audios.length" class="q-row-audio-badge">🎙 {{ item.audios.length }}</text>
 					</view>
 					<text class="q-row-mastery" @click.stop="onChangeMastery(item)">{{ item.mastery }}</text>
 				</view>
@@ -265,6 +266,14 @@ export default {
 	padding: 2px 8px;
 	border-radius: 8px;
 	border: 1px solid var(--rule);
+}
+
+.q-row-audio-badge {
+	display: inline-block;
+	margin-top: 6px;
+	margin-left: 6px;
+	color: var(--highlight-ink);
+	font-size: 12px;
 }
 
 .q-row-mastery {
